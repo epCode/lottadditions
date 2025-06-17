@@ -21,8 +21,12 @@ mobs:register_mob("lottadditions:gollum", {
 	damage = 6,
 	reach = 2,
 	
-	drops = { 
-		
+	drops = {
+		{name = "lottadditions:ring_am",
+		chance = 30,
+		min = 1,
+		max = 1,},
+		{name = "lottarmor:boots_ranger", chance = 40, min = 1, max = 1,},
 	},
 	
 	attack_type = "dogfight",

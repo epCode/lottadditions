@@ -1,5 +1,6 @@
 lottadditions = {
-  patches = {}
+  patches = {},
+  persistant_armor = {}
 }
 
 

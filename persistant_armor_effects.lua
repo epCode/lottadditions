@@ -1,59 +1,26 @@
-local default_intensity = tonumber(core.settings:get("enable_shadows_default_intensity") or 0.33)
-local default_strength = tonumber(core.settings:get("volumetric_lighting_default_strength") or 0.1)
-local function set_dark(player, boo)
-  local llevel = (core.get_node_light(player:get_pos()) or 10) +4
-  player:set_lighting()
-  player:set_sky()
-  if boo then
-    player:set_sky({
-      fog = {
-        fog_distance = 10,
-        fog_start = 0,
-        fog_color = "#fff"
-      },
-      clouds = false,
-      sky_color = {
-        day_sky = "#fff",
-        day_horizon = "#fff",
-        dawn_sky = "#fff",
-        dawn_horizon = "#fff",
-        night_sky = "#fff",
-        night_horizon = "#fff",
-        indoors = "#fff",
-        fog_sun_tint = "#fff",
-        fog_moon_tint = "#fff",
-      }
-    })
-    player:set_lighting({
-      saturation = 0.2,
-      shadows = { intensity = 0.5 },
-      bloom = {
-        intensity = 1,
-        strength_factor = 3,
-        radius = 7,
-      },
-      volumetric_light = { strength = 0.1 },
-      exposure = {
-        luminance_min = ((llevel*0.5) - 11) * 0.7,
-        luminance_max = ((llevel*0.5) - 11) * 0.7,
-        exposure_correction = -2.5,
-        speed_dark_bright = 100.0,
-        speed_bright_dark = 100.0,
-        center_weight_power = 1.0,
-      },
-    })
-  end
-end
 
 
 core.register_globalstep(function(dtime)
   for _,player in pairs(minetest.get_connected_players()) do
+    lottadditions.persistant_armor[player] = lottadditions.persistant_armor[player] or {
+      [1] = "",
+      [2] = "",
+      [3] = "",
+      [4] = "",
+      [5] = "",
+      [6] = "",
+      [7] = "",
+    }
+    local old_armor = lottadditions.persistant_armor[player]
     local inv = player:get_inventory()
-    for i = 1, 5 do
+    local new_armor = {}
+    for i = 1, 7 do
 
       local stack = inv:get_stack("armor", i)
 
       local item = stack:get_name()
+
+      new_armor[i] = item
 
       if item ~= "" then
         if minetest.registered_items[item] and minetest.registered_items[item].wearing then
@@ -62,15 +29,10 @@ core.register_globalstep(function(dtime)
             stack:add_wear((wear or 1))
           end
         end
-      end
-      if i == 5 and item ~= "lottother:one_ring" and lottadditions.patches[player].dark == true then
-        lottadditions.patches[player].dark = false
-        set_dark(player)
-        print(math.random(100))
-      elseif i == 5 and item == "lottother:one_ring" then
-        set_dark(player, true)
-        lottadditions.patches[player].dark = true
+      elseif old_armor[i] ~= "" and minetest.registered_items[old_armor[i]] and minetest.registered_items[old_armor[i]].removal then
+        minetest.registered_items[old_armor[i]].removal(player, stack)
       end
     end
+    lottadditions.persistant_armor[player] = new_armor
   end
 end)
