@@ -166,4 +166,4 @@ mobs:register_mob("lottadditions:ogre", {
 	group_attack = true,
 	step = 1,
 })
-mobs:spawn_specific("lottadditions:ogre", {"default:stone"}, {"air"}, -1, 10, 60, 10000, 3, -30000, -6000)
+mobs:spawn_specific("lottadditions:ogre", {"default:stone"}, {"air"}, -1, 10, 60, 80000, 3, -30000, -6000)
