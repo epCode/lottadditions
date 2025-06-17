@@ -97,4 +97,4 @@ mobs:register_mob("lottadditions:gollum", {
 	step = 1,
 	
 })
-mobs:register_spawn("lottadditions:gollum", {"default:stone"}, 20, -1, 600, 2, -4000)
+mobs:register_spawn("lottadditions:gollum", {"default:stone"}, 20, -1, 100000, 2, -7000)
