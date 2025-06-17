@@ -1,13 +1,13 @@
 local default_intensity = tonumber(core.settings:get("enable_shadows_default_intensity") or 0.33)
 local default_strength = tonumber(core.settings:get("volumetric_lighting_default_strength") or 0.1)
 local function set_dark(player, boo)
-  local llevel = core.get_node_light(player:get_pos()) or 10
+  local llevel = (core.get_node_light(player:get_pos()) or 10) +4
   player:set_lighting()
   player:set_sky()
   if boo then
     player:set_sky({
       fog = {
-        fog_distance = 30,
+        fog_distance = 10,
         fog_start = 0,
         fog_color = "#fff"
       },
@@ -26,17 +26,17 @@ local function set_dark(player, boo)
     })
     player:set_lighting({
       saturation = 0.2,
-      shadows = { intensity = 0.1 },
+      shadows = { intensity = 0.5 },
       bloom = {
         intensity = 1,
-        strength_factor = 1,
-        radius = 10,
+        strength_factor = 3,
+        radius = 7,
       },
       volumetric_light = { strength = 0.1 },
       exposure = {
-        luminance_min = ((llevel*0.5) - 13) * 0.7,
-        luminance_max = ((llevel*0.5) - 13) * 0.7,
-        exposure_correction = -3,
+        luminance_min = ((llevel*0.5) - 11) * 0.7,
+        luminance_max = ((llevel*0.5) - 11) * 0.7,
+        exposure_correction = -2.5,
         speed_dark_bright = 100.0,
         speed_bright_dark = 100.0,
         center_weight_power = 1.0,
