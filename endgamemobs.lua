@@ -22,18 +22,7 @@ mobs:register_mob("lottadditions:gollum", {
 	reach = 2,
 	
 	drops = { 
-		{name = "lottblocks:palantir",
-		chance = 20,
-		min = 1,
-		max = 1,},
-		{name = "lottother:saruman_staff_bottom",
-		chance = 3,
-		min = 1,
-		max = 1,},
-		{name = "lottother:saruman_staff_top",
-		chance = 3,
-		min = 1,
-		max = 1,},
+		
 	},
 	
 	attack_type = "dogfight",
@@ -83,8 +72,7 @@ mobs:register_mob("lottadditions:gollum", {
 	jump = true,
 	
 	sounds = {
-		random = "saruman_laugh",
-		death = "saruman_death",
+
 	},
 	
 	on_rightclick = function(self, clicker)
