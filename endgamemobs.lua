@@ -44,6 +44,7 @@ mobs:register_mob("lottadditions:gollum", {
       local mobs_around = core.objects_inside_radius(self.object:get_pos(), 10)
       for obj in mobs_around do
         if obj:get_hp() and obj:get_hp() > 10 and obj ~= self.object and not self.attack or self.object:get_hp() < 6 then
+					self.attack = nil
           self.state = "runaway"
           self.runaway_timer = 0.5
           self:set_yaw(core.dir_to_yaw(vector.direction(obj:get_pos(), self.object:get_pos())))
