@@ -1,9 +1,15 @@
+armor.formspec = armor.formspec..
+"image[2,0;1,1;ad_ring.png]"..
+"image[2,1;1,1;ad_ring.png]"..
+"list[detached:player_name_armor;armor;2,0;1,2;5]"
+
+
 minetest.override_item("lottother:one_ring", {
 	description = minetest.colorize("black", "The One Ring") ..
 		minetest.get_background_escape_sequence("lightgoldenrodyellow"),
 	inventory_image = "ad_gold_ring.png",
 	wield_image = "ad_gold_ring.png",
-	groups = {forbidden = 1, immortal=1, armor_shield=1},
+	groups = {forbidden = 1, immortal=1, armor_ring=1},
   
   wearing = function(player, stack)
     mana.subtract(player:get_player_name(), 1)
@@ -17,7 +23,7 @@ minetest.register_craftitem("lottadditions:ring_am", {
 		minetest.get_background_escape_sequence("lightgoldenrodyellow"),
 	inventory_image = "ad_am_ring.png",
 	wield_image = "ad_am_ring.png",
-	groups = {forbidden = 1, immortal=1, armor_shield=1},
+	groups = {forbidden = 1, immortal=1, armor_ring=1},
   
   wearing = function(player, stack)
 		local vel = player:get_velocity()
