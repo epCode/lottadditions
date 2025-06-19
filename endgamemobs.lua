@@ -82,15 +82,13 @@ mobs:register_mob("lottadditions:gollum", {
 	
 	on_rightclick = function(self, clicker)
 	end,
-	
-	
 	attacks_monsters = true,
 	peaceful = true,
 	group_attack = true,
 	step = 1,
 	
 })
-mobs:register_spawn("lottadditions:gollum", {"default:stone"}, 20, -1, 100000, 2, -7000)
+mobs:register_spawn("lottadditions:gollum", {"default:stone"}, 20, -1, 1000000, 2, -7000)
 
 mobs:register_mob("lottadditions:ogre", {
 	type = "npc",

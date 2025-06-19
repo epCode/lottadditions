@@ -11,7 +11,7 @@ core.register_globalstep(function(dtime)
       [6] = "",
       [7] = "",
     }
-    local old_armor = lottadditions.persistant_armor[player]
+    local old_armor = lottadditions.persistant_armor[player] or ""
     local inv = player:get_inventory()
     local new_armor = {}
     for i = 1, 7 do
@@ -24,13 +24,18 @@ core.register_globalstep(function(dtime)
 
       if item ~= "" then
         if minetest.registered_items[item] and minetest.registered_items[item].wearing then
-          local wear = minetest.registered_items[item].wearing(player, stack)
+          local wear = minetest.registered_items[item].wearing(player, stack, dtime)
           if wear then
             stack:add_wear((wear or 1))
           end
         end
-      elseif old_armor[i] ~= "" and minetest.registered_items[old_armor[i]] and minetest.registered_items[old_armor[i]].removal then
+      end
+      if old_armor[i] ~= "" and old_armor[i] ~= new_armor[i] and minetest.registered_items[old_armor[i]] and minetest.registered_items[old_armor[i]].removal then
         minetest.registered_items[old_armor[i]].removal(player, stack)
+        print("s")
+      end
+      if new_armor[i] ~= "" and old_armor[i] ~= new_armor[i] and minetest.registered_items[new_armor[i]] and minetest.registered_items[new_armor[i]].equip then
+        minetest.registered_items[new_armor[i]].equip(player, stack)
       end
     end
     lottadditions.persistant_armor[player] = new_armor
