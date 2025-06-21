@@ -8,7 +8,7 @@ lottmstats = {
 core.register_on_joinplayer(function(player)
   lottmusic[player] = {current_pid = nil, current_name = nil, priority = nil}
   lottmstats[player] = {gametimehit = minetest.get_gametime()}
-  lottmusic.play_music(player, "bree_night")
+  --lottmusic.play_music(player, "bree_night")
 end)
 
 function lottmusic.music_stop(player, force, fadespeed, other)
@@ -29,7 +29,7 @@ function lottmusic.play_music(player, name, def)
   def = def or {}
   local gain = def.gain or 0.2
   local fade = def.fade or 1
-  local loop = def.loop or false
+  local loop = not def.no_loop
   local priority = def.priority or 1
   
   if name == lottmusic[player].current_name or not lottadditions.patches[player].music or lottmusic[player].priority and lottmusic[player].priority > priority then return end
@@ -62,7 +62,7 @@ local blockbiomes = {
   ["lottmapgen:mirkwood_grass"] = "mirkwood",
   ["lottmapgen:rohan_grass"] = "rohan",
   ["lottmapgen:ithilien_grass"] = "ithilien",
-  [""] = "generic",
+  [""] = "ambient",
 }
 
 
@@ -98,7 +98,11 @@ end
 function lottmusic.next_music_check(player)
   local pos = player:get_pos()
   local biome = blockbiomes[block_ratio(pos, 10)]
-  lottmusic.play_music(player, biome)
+  if pos.y > -50 then
+    lottmusic.play_music(player, biome)
+  else
+    lottmusic.play_music(player, "underground")
+  end
 end
 
 function lottmusic.play_effect(name, def)
@@ -135,14 +139,25 @@ end)
 local ttimer = 5
 minetest.register_globalstep(function(dtime)
   for _,player in pairs(minetest.get_connected_players()) do
+    
+    --[[
+    local witem = player:get_wielded_item()
+    loadweapons.set_stack_upgrade(witem, {
+      dam = 5,
+      aff = 2,
+      Health = "add",
+      Speed = "add",
+      sharp = "Sharp",
+    })
+    player:set_wielded_item(witem)]]
+
 
     ttimer = ttimer-dtime
     
     if ttimer < 0 then
       ttimer = 5
       
-      local biome = blockbiomes[block_ratio(player:get_pos(), 10)]
-      lottmusic.play_music(player, biome, {fade = 0.3})
+      lottmusic.next_music_check(player)
     end
 
     
