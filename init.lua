@@ -3,7 +3,6 @@ lottadditions = {
   persistant_armor = {}
 }
 
-
 core.register_on_joinplayer(function(player)
   lottadditions.patches[player] = {dark = false, music = true}
 end)
