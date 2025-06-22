@@ -10,11 +10,15 @@ end)
 -- DF = Do file
 local function df(filename) dofile(core.get_modpath("lottadditions").."/"..filename) end
 
+df("coolitems.lua")
+
+df("rings.lua")
+
 df("weapons.lua")
 
-df("endgamemobs.lua")
-
 df("patches.lua")
+
+df("endgamemobs.lua")
 
 df("persistant_armor_effects.lua")
 

@@ -1,8 +1,14 @@
+-- Removed, probably replaced mobs:
+mobs.spawning_mobs["lottmobs:nazgul"] = nil
+
+--------------------------------
+
+
 mobs:register_mob("lottadditions:gollum", {
 	type = "npc",
 	race = "GAMEorc",
-	hp_min = 16,
-	hp_max = 16,
+	hp_min = 1,
+	hp_max = 1,
 	
 	collisionbox = {-0.45, 0, -0.45, 0.45, 0.9, 0.45},
   visual = "mesh",
@@ -10,8 +16,12 @@ mobs:register_mob("lottadditions:gollum", {
 	textures = {
 		{"mobs_mc_golum.png"},
 	},
-	
-	visual_size = {x=5, y=5},	
+	class_drops = lottadditions.drops({
+		regweapons = 1,
+		rareweapons = 20,
+		regrings = 10,
+	}),
+	visual_size = {x=5, y=5},
 	makes_footstep_sound = true,
 	view_range = 40,
 	walk_velocity = 2,
@@ -166,3 +176,97 @@ mobs:register_mob("lottadditions:ogre", {
 	step = 1,
 })
 mobs:spawn_specific("lottadditions:ogre", {"default:stone"}, {"air"}, -1, 10, 60, 80000, 3, -30000, -6000)
+
+mobs:register_mob("lottadditions:nazgul", {
+	type = "monster",
+	hp_min = 90,
+	hp_max = 110,
+	pathfinding = 2,
+	collisionbox = {-0.3,0,-0.3, 0.3,1.8,0.3},
+	visual = "mesh",
+	mesh = "lottarmor_character.b3d",
+	textures = {
+		{"ad_nazgul.png", "blank.png", "blank.png","blank.png"},
+	},
+	makes_footstep_sound = false,
+	view_range = 30,
+	walk_velocity = 1,
+	run_velocity = 4,
+	damage = 10,
+	drops = {
+		{name = "lottores:mithril_ingot",
+		chance = 5,
+		min = 1,
+		max = 5,},
+
+		{name = "lottweapons:gold_spear",
+		chance = 5,
+		min = 1,
+		max = 1,},
+
+		{name = "lottarmor:boots_dwarf",
+    	chance = 4,
+    	min = 1,
+    	max = 1,},
+    	{name = "lottarmor:leggings_dwarf",
+    	chance = 4,
+    	min = 1,
+    	max = 1,},
+    	{name = "lottarmor:helmet_dwarf",
+    	chance = 4,
+    	min = 1,
+    	max = 1,},
+
+	},
+	do_custom = function(self, dtime)
+		if self.attack and self.attack:is_player() then
+			lottadditions.set_faint(self.attack, true)
+			self.attack:set_physics_override({speed_walk = 0.85})
+			lottmusic.play_music(self.attack, "nazgul", {priority = 2})
+			self._naz = self.attack
+		elseif self._naz then
+			lottadditions.set_faint(self._naz)
+			self._naz:set_physics_override({speed_walk = 1})
+			lottmusic.music_stop(self._naz)
+			self._naz = nil
+		end
+	end,
+	on_die = function(self)
+		if self._naz then
+			lottadditions.set_faint(self._naz)
+			self._naz:set_physics_override({speed_walk = 1})
+			lottmusic.music_stop(self._naz)
+			self._naz = nil
+		end
+	end,
+	drawtype = "front",
+	armor = 50,
+	water_damage = 10,
+	lava_damage = 0,
+	light_damage = 0,
+	on_rightclick = nil,
+	attack_type = "dogfight",
+	animation = {
+		speed_normal = 8,
+		speed_run = 8,
+		stand_start = 0,
+		stand_end = 79,
+		walk_start = 168,
+		walk_end = 187,
+		run_start = 168,
+		run_end = 187,
+		punch_start = 189,
+		punch_end = 198,
+	},
+	jump = true,
+	sounds = {
+		--war_cry = {"mobs_die_yell"},
+		--death = "default_death",
+		--attack = {"default_punch2"},
+	},
+	attacks_monsters = false,
+	peaceful = true,
+	group_attack = true,
+	step = 1,
+})
+mobs:register_spawn("lottadditions:nazgul", {"default:stone"}, 20, -1, 90000, 3, -50)

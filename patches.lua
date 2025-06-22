@@ -7,10 +7,61 @@ armor.formspec = armor.formspec..
 
 local default_intensity = tonumber(core.settings:get("enable_shadows_default_intensity") or 0.33)
 local default_strength = tonumber(core.settings:get("volumetric_lighting_default_strength") or 0.1)
-local function set_dark(player, boo)
-  local llevel = (core.get_node_light(player:get_pos()) or 10) +4
+
+function lottadditions.reset_sky(player)
+  local pos = player:get_pos()
   player:set_lighting()
   player:set_sky()
+  if pos.y < -50 then
+    player:set_sky({
+      fog = {
+        fog_start = 0,
+        fog_color = "#000"
+      },
+    })
+    player:set_lighting({
+      saturation = 0.85,
+      bloom = {
+        intensity = 0.15,
+        strength_factor = 3,
+        radius = 8,
+      },
+      exposure = {
+        exposure_correction = -1,
+      },
+    })
+  end
+end
+  
+function lottadditions.set_faint(player, boo)
+  lottadditions.reset_sky(player)
+  if boo then
+    player:set_sky({
+      fog = {
+        fog_distance = 20,
+        fog_start = 0,
+        fog_color = "#000"
+      },
+    })
+    player:set_lighting({
+      saturation = 0.5,
+      bloom = {
+        intensity = 0.3,
+        strength_factor = 3,
+        radius = 8,
+      },
+      volumetric_light = { strength = 1 },
+      exposure = {
+        exposure_correction = -1.5,
+      },
+    })
+  end
+end
+
+function lottadditions.set_dark(player, boo)
+  local llevel = (core.get_node_light(vector.add(player:get_pos(), vector.new(0,1,0))) or 10) +4
+  lottadditions.reset_sky(player)
+  
   if boo then
     player:set_sky({
       fog = {
@@ -78,10 +129,16 @@ minetest.override_item("lottother:one_ring", {
       lottmusic.play_music(player, "ring_on", {priority = 3, gain = 0.4})
       mana.subtract(player:get_player_name(), 1)
       playereffects.apply_effect_type("invisible", 1 , player)
-  		set_dark(player, true)
+  		lottadditions.set_dark(player, true)
     end
+    
+    local vel = player:get_velocity()
+    player:set_physics_override({speed_walk = (math.random(25)/100)+.5})
+    
+    
   end,
 	removal = function(player, stack)
+    player:set_physics_override({speed_walk = 1})
     lottadditions.patches[player].ring_equp = 1
     lottmusic.play_effect("take_off_ring", {
       pos = player:get_pos(),
@@ -92,83 +149,10 @@ minetest.override_item("lottother:one_ring", {
     minetest.after(1, function()
       if player and player:get_pos() then
         lottmusic.music_stop(player, false, 0.4)
-    		set_dark(player)
+    		lottadditions.set_dark(player)
       end
     end)
 	end,
 	
-  wear = 0,
-}, {"on_use"})
-
-minetest.register_craftitem("lottadditions:ring_am", {
-	description = minetest.colorize("green", "Amythist Ring of feather falling") ..
-		minetest.get_background_escape_sequence("lightgoldenrodyellow"),
-	inventory_image = "ad_am_ring.png",
-	wield_image = "ad_am_ring.png",
-	groups = {forbidden = 1, immortal=1, armor_ring=1},
-  
-  wearing = function(player, stack)
-    local name = player:get_player_name()
-		local vel = player:get_velocity()
-		if vel.y < -5 and mana.get(name) > 5 then
-      if math.random(2) == 1 then
-        mana.subtract(name, 1)
-      end
-			player:set_physics_override({gravity = -0.1})
-		else
-			player:set_physics_override({gravity = 1})
-		end
-  end,
-	removal = function(player, stack)
-		player:set_physics_override({gravity = 1})
-	end,
-  wear = 0,
-}, {"on_use"})
-
-local function unstable_pos(pos, v) -- works for non straight vectors if needed
-  local nodes = minetest.registered_nodes
-  for i = 1, 30 do
-    local headpos = vector.add((vector.add(pos, vector.new(0,1,0))), vector.multiply(v, i))
-    local feetpos = vector.add(pos, vector.multiply(v, i))
-    local node1 = minetest.get_node_or_nil(feetpos)
-    local node2 = minetest.get_node_or_nil(feetpos)
-    if node1 and node2 and nodes[node1.name] and nodes[node2.name] and not nodes[node1.name].walkable and not nodes[node2.name].walkable then
-      return vector.round(feetpos)
-    end
-  end
-  return nil
-end
-  
-local last_vel = {}
-
-
-minetest.register_craftitem("lottadditions:ring_thorium", {
-	description = minetest.colorize("green", "Thorium Ring of Instability Travel") ..
-		minetest.get_background_escape_sequence("lightgoldenrodyellow"),
-	inventory_image = "ad_thorium_ring.png",
-	groups = {forbidden = 1, immortal=1, armor_ring=1},
-  
-  wearing = function(player, stack)
-    local name = player:get_player_name()
-    local vel = player:get_velocity()
-    if last_vel[name] then
-      local lvel = last_vel[name]
-      local pos = nil
-      if math.abs(vel.x) < 0.01 and math.abs(lvel.x) > 3 and mana.subtract(name, 120) then
-        pos = unstable_pos(player:get_pos(), vector.normalize(vector.new(lvel.x,0,0)))
-      elseif math.abs(vel.z) < 0.01 and math.abs(lvel.z) > 3 and mana.subtract(name, 120) then
-        pos = unstable_pos(player:get_pos(), vector.normalize(vector.new(0,0,lvel.z)))
-      end
-      if pos then
-        player:punch(player, 1, {damage_groups = {fleshy = math.random(6)}}, vector.zero())
-        player:set_pos(pos)
-      end
-    end
-    
-    last_vel[name] = vel
-  end,
-	removal = function(player, stack)
-		player:set_physics_override({gravity = 1})
-	end,
   wear = 0,
 }, {"on_use"})

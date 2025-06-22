@@ -101,6 +101,7 @@ function lottmusic.next_music_check(player)
   if pos.y > -50 then
     lottmusic.play_music(player, biome)
   else
+    lottadditions.reset_sky(player)
     lottmusic.play_music(player, "underground")
   end
 end
