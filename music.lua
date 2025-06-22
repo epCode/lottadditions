@@ -99,6 +99,7 @@ function lottmusic.next_music_check(player)
   local pos = player:get_pos()
   local biome = blockbiomes[block_ratio(pos, 10)]
   if pos.y > -50 then
+    lottadditions.reset_sky(player, true)
     lottmusic.play_music(player, biome)
   else
     lottadditions.reset_sky(player)
@@ -130,14 +131,14 @@ core.register_on_player_receive_fields(function(player, formname, fields)
   end
 end)
 
-
+--[[
 core.register_on_player_hpchange(function(player, hp_change, reason)
   if hp_change < -1 then
     lottmusic.play_music(player, "extremedanger", {priority = 2})
   end
-end)
+end)]]
 
-local ttimer = 5
+local ttimer = 0.5
 minetest.register_globalstep(function(dtime)
   for _,player in pairs(minetest.get_connected_players()) do
     
@@ -156,7 +157,7 @@ minetest.register_globalstep(function(dtime)
     ttimer = ttimer-dtime
     
     if ttimer < 0 then
-      ttimer = 5
+      ttimer = 20
       
       lottmusic.next_music_check(player)
     end

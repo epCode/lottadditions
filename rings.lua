@@ -49,16 +49,17 @@ minetest.register_craftitem("lottadditions:ring_thorium", {
   
   wearing = function(player, stack)
     local name = player:get_player_name()
+    
     local vel = player:get_velocity()
     if last_vel[name] then
       local lvel = last_vel[name]
       local pos = nil
-      if math.abs(vel.x) < 0.01 and math.abs(lvel.x) > 3 and mana.subtract(name, 120) then
+      if math.abs(vel.x) < 0.01 and math.abs(lvel.x) > 3 then
         pos = unstable_pos(player:get_pos(), vector.normalize(vector.new(lvel.x,0,0)))
-      elseif math.abs(vel.z) < 0.01 and math.abs(lvel.z) > 3 and mana.subtract(name, 120) then
+      elseif math.abs(vel.z) < 0.01 and math.abs(lvel.z) > 3 then
         pos = unstable_pos(player:get_pos(), vector.normalize(vector.new(0,0,lvel.z)))
       end
-      if pos then
+      if pos and mana.subtract(name, 120) then
         player:punch(player, 1, {damage_groups = {fleshy = math.random(6)}}, vector.zero())
         player:set_pos(pos)
       end
@@ -71,3 +72,6 @@ minetest.register_craftitem("lottadditions:ring_thorium", {
 	end,
   wear = 0,
 }, {"on_use"})
+
+
+-- TODO: Hunger, Telep, Lev, Free Action?, Damage, Speed, Naz rings

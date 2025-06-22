@@ -113,6 +113,7 @@ minetest.override_item("lottother:one_ring", {
 	wield_image = "ad_gold_ring.png",
 	groups = {forbidden = 1, immortal=1, armor_ring=1},
   equip = function(player, stack)
+    ch.chat(player, "@YYou feel this ring has *great* power..@")
     lottadditions.patches[player].ring_equp = 1
     lottmusic.play_effect("take_off_ring", {
       pos = player:get_pos(),
