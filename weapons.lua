@@ -20,12 +20,24 @@ function loadweapons.set_stack_upgrade(stack, upgrades)
       description = description .. "\n "..core.colorize("#f44", "[+"..value.."]")
     elseif key == "aff" then
       tack_onfirst = tack_onfirst .. "  "..core.colorize("#4f4", "(+"..value..")")
-    elseif value == "add" then
+    elseif value == "aff" then
       tack_on = tack_on .. "\nAffects your " .. key .. "."
     else
       tack_on = tack_on .. "\n"..value
     end
   end
   meta:set_string("description", description..tack_onfirst..tack_on)
-  
+  meta:set_string("upgrades", core.serialize(upgrades))
 end
+
+--[[
+local witem = player:get_wielded_item()
+loadweapons.set_stack_upgrade(witem, {
+  dam = 5,
+  aff = 2,
+  Health = "aff",
+  Speed = "aff",
+  sharp = "Sharp",
+})
+player:set_wielded_item(witem)]]
+-- aff's are effected by the aff value. EG speed = 2, and health = 2

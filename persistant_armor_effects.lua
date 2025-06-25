@@ -14,7 +14,7 @@ core.register_globalstep(function(dtime)
     local old_armor = lottadditions.persistant_armor[player] or ""
     local inv = player:get_inventory()
     local new_armor = {}
-    for i = 1, 7 do
+    for i = 1, 11 do
 
       local stack = inv:get_stack("armor", i)
 

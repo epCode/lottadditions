@@ -27,6 +27,8 @@ df("persistant_armor_effects.lua")
 
 df("music.lua")
 
+df("new_items.lua")
+
 
 
 

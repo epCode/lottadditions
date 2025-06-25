@@ -142,16 +142,7 @@ local ttimer = 0.5
 minetest.register_globalstep(function(dtime)
   for _,player in pairs(minetest.get_connected_players()) do
     
-    --[[
-    local witem = player:get_wielded_item()
-    loadweapons.set_stack_upgrade(witem, {
-      dam = 5,
-      aff = 2,
-      Health = "add",
-      Speed = "add",
-      sharp = "Sharp",
-    })
-    player:set_wielded_item(witem)]]
+    
 
 
     ttimer = ttimer-dtime

@@ -1,8 +1,3 @@
-armor.formspec = armor.formspec..
-"]image[2,0;1,1;ad_ring.png]"..
-"image[2,1;1,1;ad_ring.png]"..
-"list[detached:player_name_armor;armor;2,0;1,2;5]"..
-"image_button[2,3;1,1;ad_sound.png;toggle_sound;]"
 
 
 local default_intensity = tonumber(core.settings:get("enable_shadows_default_intensity") or 0.33)
