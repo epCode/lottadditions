@@ -1,5 +1,3 @@
-
-
 local default_intensity = tonumber(core.settings:get("enable_shadows_default_intensity") or 0.33)
 local default_strength = tonumber(core.settings:get("volumetric_lighting_default_strength") or 0.1)
 
