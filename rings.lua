@@ -1,11 +1,17 @@
+lottadditions.registered_rings = {}
+lottadditions.unregistered_rings = {}
 
-minetest.register_craftitem("lottadditions:ring_am", {
-	description = minetest.colorize("green", "Amythist Ring of feather falling") ..
-		minetest.get_background_escape_sequence("lightgoldenrodyellow"),
-	inventory_image = "ad_am_ring.png",
-	wield_image = "ad_am_ring.png",
-	groups = {forbidden = 1, immortal=1, armor_ring=1},
-  
+function lottadditions.register_ring(name, def)
+	
+	def.groups.immortal=1
+	def.groups.armor_ring=1
+	
+	lottadditions.unregistered_rings["lottadditions:ring_"..name] = def
+end
+
+lottadditions.register_ring("feather_falling", {
+	print_name = "Feather Falling",
+	groups = {forbidden = 1},
   wearing = function(player, stack)
     local name = player:get_player_name()
 		local vel = player:get_velocity()
@@ -22,7 +28,7 @@ minetest.register_craftitem("lottadditions:ring_am", {
 		player:set_physics_override({gravity = 1})
 	end,
   wear = 0,
-}, {"on_use"})
+})
 
 local function unstable_pos(pos, v) -- works for non straight vectors if needed
   local nodes = minetest.registered_nodes
@@ -41,12 +47,9 @@ end
 local last_vel = {}
 
 
-minetest.register_craftitem("lottadditions:ring_thorium", {
-	description = minetest.colorize("green", "Thorium Ring of Instability Travel") ..
-		minetest.get_background_escape_sequence("lightgoldenrodyellow"),
-	inventory_image = "ad_thorium_ring.png",
-	groups = {forbidden = 1, immortal=1, armor_ring=1},
-  
+lottadditions.register_ring("instability", {
+	print_name = "Instability Travel",
+	groups = {forbidden = 1},
   wearing = function(player, stack)
     local name = player:get_player_name()
     
@@ -71,7 +74,87 @@ minetest.register_craftitem("lottadditions:ring_thorium", {
 		player:set_physics_override({gravity = 1})
 	end,
   wear = 0,
-}, {"on_use"})
-
+})
 
 -- TODO: Hunger, Telep, Lev, Free Action?, Damage, Speed, Naz rings
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local function get_keys(t)
+	local keyset={}
+	local n=0
+
+	for k,v in pairs(t) do
+	  n=n+1
+		if t[k] then
+		  keyset[n]=k
+		end
+	end
+	return keyset
+end
+
+
+
+local mstorage = core.get_mod_storage()
+
+if mstorage:get_string("cycled_items") ~= "" then
+	local therings = core.deserialize(mstorage:get_string("cycled_items")).rings
+	lottadditions.registered_rings = therings	
+else
+	local used_materials = table.copy(default.materials)
+	for name,def in pairs(lottadditions.unregistered_rings) do
+		
+		local mat = get_keys(used_materials)
+		if #mat < 1 then
+			used_materials = table.copy(default.materials)
+			
+			mat = get_keys(used_materials)
+		end
+		local mat = mat[math.random(#mat)]
+		local matprint = used_materials[mat].print_name
+		
+		def.description = matprint.." Ring of "..def.print_name
+		def.inventory_image = "ad_"..mat.."_ring.png"
+		
+		
+		lottadditions.registered_rings[name] = def
+		
+		local cycled = core.deserialize(mstorage:get_string("cycled_items")) or {}
+		cycled.rings = lottadditions.registered_rings
+		mstorage:set_string("cycled_items", core.serialize(cycled))
+	end
+end
+
+for name,def in pairs(lottadditions.registered_rings) do
+	core.register_craftitem(name, def)
+end
+
