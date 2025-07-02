@@ -21,7 +21,7 @@ minetest.register_node("lottadditions:lantern_basic", {
 	walkable = false,
 	liquids_pointable = false,
 	light_source = 12,
-	groups = {choppy=2, dig_immediate=3, flammable=1, attached_node=1, lantern=1},
+	groups = {choppy=2, dig_immediate=3, flammable=1, attached_node=1, lantern=1, light_source = 1},
 	floodable = true,
 	on_flood = on_flood,
 })
@@ -40,5 +40,5 @@ minetest.register_node("lottadditions:lantern_basic_out", {
 	sunlight_propagates = true,
 	walkable = false,
 	liquids_pointable = false,
-	groups = {choppy=2, dig_immediate=3, flammable=1, attached_node=1, lantern=1},
+	groups = {choppy=2, dig_immediate=3, flammable=1, attached_node=1, lantern=1, light_source = 1},
 })
