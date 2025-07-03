@@ -129,8 +129,8 @@ local dropslists = {
 function lottadditions.drops(lists)
   local all = {}
   for name,mul in pairs(lists) do
-    olist = dropslists[name]
-    dlist = {}
+    local olist = dropslists[name]
+    local dlist = {}
     for name,amount in pairs(olist) do
       local am = amount
       local ct = 1
