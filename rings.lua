@@ -128,7 +128,17 @@ local mstorage = core.get_mod_storage()
 
 if mstorage:get_string("cycled_items") ~= "" then
 	local therings = core.deserialize(mstorage:get_string("cycled_items")).rings
-	lottadditions.registered_rings = therings	
+	local used_materials = table.copy(default.materials)
+	for name,def in pairs(lottadditions.unregistered_rings) do
+		
+		
+		def.description = therings[name].description
+		def.inventory_image = therings[name].inventory_image
+		
+		
+		lottadditions.registered_rings[name] = def
+		
+	end
 else
 	local used_materials = table.copy(default.materials)
 	for name,def in pairs(lottadditions.unregistered_rings) do
@@ -147,6 +157,7 @@ else
 		
 		
 		lottadditions.registered_rings[name] = def
+		
 		
 		local cycled = core.deserialize(mstorage:get_string("cycled_items")) or {}
 		cycled.rings = lottadditions.registered_rings
