@@ -1,22 +1,125 @@
 lottmusic = {
 }
 lottmstats = {
-  
 }
 
 
 core.register_on_joinplayer(function(player)
-  lottmusic[player] = {current_pid = nil, current_name = nil, priority = nil}
+  lottmusic[player] = {current_pid = nil, current_name = nil, priority = nil, ambient = {pid = nil, name = ""}}
   lottmstats[player] = {gametimehit = minetest.get_gametime()}
   --lottmusic.play_music(player, "bree_night")
 end)
+
+local ambient_structures = {
+  windytrees = {
+    "lottplants:alderleaf",
+    "default:leaves",
+    "lottplants:appleleaf",
+    "lottplants:birchleaf",
+    "lottplants:beechleaf",
+    "lottplants:culumaldaleaf",
+    "lottplants:yellowflowers",
+    "lottplants:elmleaf",
+    "lottplants:firleaf",
+    "lottplants:lebethronleaf",
+    "lottplants:mallornleaf",
+    "lottplants:pineleaf",
+    "lottplants:plumleaf",
+    "lottplants:rowanleaf",
+    "lottplants:whiteleaf",
+    "lottplants:yavannamireleaf",
+    "lottplants:mirkleaf"
+
+  },
+  cavesounds = {
+    "default:stone",
+    "default:desert_stone",
+  },
+  watersounds = {
+    "default:water_source",
+    "default:water_flowing",
+    "default:river_water_source",
+    "default:river_water_flowing"
+  },
+}
+
+local ambient_structures_op = {}
+local ambient_structures_op_neg = {}
+
+for sound,dlist in pairs(ambient_structures) do
+  for _,noden in pairs(dlist) do
+    ambient_structures_op[noden] = ambient_structures_op[noden] or {}
+    if type(noden) ~= "table" then
+      table.insert(ambient_structures_op[noden], sound)
+    else
+      for _,nodeneg in pairs(noden) do
+        ambient_structures_op[nodeneg] = ambient_structures_op[nodeneg] or {}
+        table.insert(ambient_structures_op[nodeneg], sound)
+        table.insert(ambient_structures_op[noden], sound)
+      end
+    end
+  end
+end
+
+local function get_d_names(list, sounds)
+  local flist = {}
+  for sound,dlist in pairs(list) do
+    if sounds then flist[sound] = 0 else
+      for _,noden in pairs(dlist) do
+        if type(noden) == "string" then
+          table.insert(flist, noden)
+        else
+          for _,nodeneg in pairs(noden) do
+            table.insert(flist, nodeneg)
+          end
+        end
+      end
+    end
+  end
+  return flist
+end
+
+local function ambient_applied_structure(pos)
+  local SEARCHDIST = 10
+  local nodes = core.find_nodes_in_area(vector.add(pos, vector.new(-SEARCHDIST,-SEARCHDIST,-SEARCHDIST)), vector.add(pos, vector.new(SEARCHDIST,SEARCHDIST,SEARCHDIST)), get_d_names(ambient_structures), true)
+  
+  local scorelist = get_d_names(ambient_structures, true)
+  
+  for nodenames,poslist in pairs(nodes) do
+    local listscore = 0
+    for _,nodepos in pairs(poslist) do
+      local max_dist = SEARCHDIST*1.74
+      local dist_inverted = ((-vector.distance(pos, nodepos)+max_dist)/10)^10
+      listscore = listscore + dist_inverted
+    end
+    
+    --if ambient_structures_op_neg[nodenames] then
+    --  listscore = -listscore
+    --end
+
+    
+    for _,soundname in pairs(ambient_structures_op[nodenames]) do
+      if pos.y < -100 and soundname == "cavesounds" or soundname ~= "cavesounds" then
+        scorelist[soundname] = scorelist[soundname] + listscore
+      end
+    end
+  end
+  local final_scored = {name=nil, score = 0}
+  for name,score in pairs(scorelist) do
+    if score > final_scored.score then
+      final_scored = {name=name,score=score}
+      print(name, score)
+    end
+  end
+  return final_scored.name
+end
 
 function lottmusic.music_stop(player, force, fadespeed, other)
   local pid = lottmusic[player].current_pid
   if force then
     if pid then core.sound_stop(pid) end
   elseif pid then core.sound_fade(pid, fadespeed or 0.1, 0) end
-  lottmusic[player] = {current_pid = nil, current_name = nil, priority = nil}
+  lottmusic[player] = {current_pid = nil, current_name = nil, priority = nil, ambient = lottmusic[player].ambient}
   if not other then
     lottmusic.next_music_check(player)
   end
@@ -41,6 +144,31 @@ function lottmusic.play_music(player, name, def)
   lottmusic[player].current_name = name
   lottmusic[player].priority = priority
   lottmusic[player].current_pid = core.sound_play(name, {
+    gain = gain,
+    fade = fade,
+    loop = loop,
+    to_player = player:get_player_name(),
+  })
+end
+
+function lottmusic.ambient_stop(player, force, fadespeed)
+  local pid = lottmusic[player].ambient.pid
+  if force then
+    if pid then core.sound_stop(pid) end
+  elseif pid then core.sound_fade(pid, fadespeed or 0.1, 0) end
+  lottmusic[player].ambient.pid = nil
+end
+
+function lottmusic.play_ambient(player, name, def)
+  def = def or {}
+  local gain = def.gain or 0.2
+  local fade = def.fade or 1
+  local loop = not def.no_loop
+  
+  if name == lottmusic[player].ambient.name then return end
+  lottmusic.ambient_stop(player, false, 0.3, true)
+  lottmusic[player].ambient.name = name
+  lottmusic[player].ambient.pid = core.sound_play(name, {
     gain = gain,
     fade = fade,
     loop = loop,
@@ -101,9 +229,6 @@ function lottmusic.next_music_check(player)
   if pos.y > -50 then
     lottadditions.reset_sky(player, true)
     lottmusic.play_music(player, biome)
-  else
-    lottadditions.reset_sky(player)
-    lottmusic.play_music(player, "underground")
   end
 end
 
@@ -139,9 +264,41 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 end)]]
 
 local ttimer = 0.5
+local timer = 1
 minetest.register_globalstep(function(dtime)
   for _,player in pairs(minetest.get_connected_players()) do
+    local pos = player:get_pos()
     
+    timer = timer-dtime
+    
+    if timer < 0 then
+      
+      
+      local applied_ambient = ambient_applied_structure(pos)
+      
+      lottmusic.play_ambient(player, applied_ambient, {gain = 0.8})
+      
+      
+      timer = math.random(100)/10
+      
+      if applied_ambient == "cavesounds" then
+        lottmusic.play_music(player, "underground")
+      end
+      
+      if applied_ambient == "windytrees" and math.random(3) == 1 then
+        local ppos = pos
+        for i=1, math.random(11) do
+          minetest.after(i*math.random(100)/100, function()
+            lottmusic.play_effect("bird", {
+              pos = vector.add(ppos, vector.multiply(vector.random_direction(), math.random(10))),
+              max_hear_distance = 14,
+              gain = 0.5,
+              loop = false,
+            })
+          end)
+        end
+      end
+    end
     
 
 
