@@ -284,14 +284,14 @@ minetest.register_globalstep(function(dtime)
         lottmusic.play_music(player, "underground")
       end
       
-      if applied_ambient == "windytrees" and math.random(3) == 1 then
+      if (not applied_ambient or applied_ambient == "windytrees") and math.random(3) == 1 then
         local ppos = pos
         for i=1, math.random(11) do
           minetest.after(i*math.random(100)/100, function()
             lottmusic.play_effect("bird", {
               pos = vector.add(ppos, vector.multiply(vector.random_direction(), math.random(10))),
               max_hear_distance = 14,
-              gain = 0.5,
+              gain = math.random(2),
               loop = false,
             })
           end)
