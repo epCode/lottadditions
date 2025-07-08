@@ -108,7 +108,6 @@ local function ambient_applied_structure(pos)
   for name,score in pairs(scorelist) do
     if score > final_scored.score then
       final_scored = {name=name,score=score}
-      print(name, score)
     end
   end
   return final_scored.name
@@ -279,7 +278,7 @@ minetest.register_globalstep(function(dtime)
       lottmusic.play_ambient(player, applied_ambient, {gain = 0.8})
       
       
-      timer = math.random(100)/10
+      timer = math.random(100)/50
       
       if applied_ambient == "cavesounds" then
         lottmusic.play_music(player, "underground")
