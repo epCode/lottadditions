@@ -226,8 +226,10 @@ function lottmusic.next_music_check(player)
   local pos = player:get_pos()
   local biome = blockbiomes[block_ratio(pos, 10)]
   if pos.y > -50 then
-    lottadditions.reset_sky(player, true)
+    lottadditions.reset_sky(player)
     lottmusic.play_music(player, biome)
+  else
+    lottadditions.reset_sky(player)
   end
 end
 

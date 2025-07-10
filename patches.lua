@@ -7,10 +7,17 @@ function lottadditions.reset_sky(player)
   player:set_sky()
   if pos.y < -50 then
     player:set_sky({
-      fog = {
-        fog_start = 0,
-        fog_color = "#000"
-      },
+      sky_color = {
+        day_sky = "#000",
+        day_horizon = "#000",
+        dawn_sky = "#000",
+        dawn_horizon = "#000",
+        night_sky = "#000",
+        night_horizon = "#000",
+        indoors = "#000",
+        fog_sun_tint = "#000",
+        fog_moon_tint = "#000",
+      }
     })
     player:set_lighting({
       saturation = 0.85,
