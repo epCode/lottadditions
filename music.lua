@@ -286,7 +286,7 @@ minetest.register_globalstep(function(dtime)
         lottmusic.play_music(player, "underground")
       end
       
-      if (not applied_ambient or applied_ambient == "windytrees") and math.random(3) == 1 then
+      if (applied_ambient == "windytrees") and math.random(3) == 1 then
         local ppos = pos
         for i=1, math.random(11) do
           minetest.after(i*math.random(100)/100, function()
