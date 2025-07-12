@@ -1,10 +1,29 @@
 local default_intensity = tonumber(core.settings:get("enable_shadows_default_intensity") or 0.33)
 local default_strength = tonumber(core.settings:get("volumetric_lighting_default_strength") or 0.1)
 
+local cloud_current_dir = vector.new(0,0,1)
+local cloud_current_vel = 0
+
+core.register_globalstep(function(dtime)
+  cloud_current_dir = vector.rotate_around_axis(cloud_current_dir, vector.new(0,1,0), math.rad((math.random(10)-5)/10))
+  cloud_current_vel = math.min(math.max(cloud_current_vel + (math.random(10)-5)/30, 2), -2)
+  for _,player in pairs(core.get_connected_players()) do
+    player:set_clouds({
+      speed = vector.multiply(cloud_current_dir, cloud_current_vel)
+    })
+  end
+end)
+
 function lottadditions.reset_sky(player)
   local pos = player:get_pos()
   player:set_lighting()
   player:set_sky()
+  player:set_sky({
+    sky_color = {
+      night_sky = "#071837",
+      night_horizon = "#0c1628",
+    }
+  })
   if pos.y < -50 then
     player:set_sky({
       sky_color = {
